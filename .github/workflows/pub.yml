@@ -39,7 +39,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || matrix.args == '--target armv7-unknown-linux-gnueabihf' && 'armv7-unknown-linux-gnueabi' || '' }}
 
       - name: install dependencies (ubuntu x86 only)
         if: matrix.platform == 'ubuntu-20.04' && matrix.args == '' # This must match the platform value defined above.
@@ -51,7 +51,6 @@ jobs:
         if: matrix.platform == 'ubuntu-20.04' && matrix.args == '--target armv7-unknown-linux-gnueabihf' # This must match the platform value defined above.
         run: |
           sudo apt-get update
-          sudo rustup target add armv7-unknown-linux-gnueabi
           sudo apt install gcc-arm-linux-gnueabihf
           sudo dpkg --add-architecture armhf
           sudo apt-get update && sudo apt-get upgrade -y
