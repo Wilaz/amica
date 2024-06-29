@@ -19,10 +19,10 @@ jobs:
           #   args: '--target x86_64-apple-darwin'
           # - platform: 'ubuntu-20.04' # for x86_64 linux
           #   args: ''
-          - platform: 'ubuntu-20.04' # for ARMv7 linux
-            args: '--target armv7-unknown-linux-gnueabihf'
-          # - platform: 'ubuntu-20.04' # for ARM64 linux
-          #   args: '--target aarch64-unknown-linux-gnu'
+          # - platform: 'ubuntu-20.04' # for ARMv7 linux
+          #   args: '--target armv7-unknown-linux-gnueabihf'
+          - platform: 'ubuntu-20.04' # for ARM64 linux
+            args: '--target aarch64-unknown-linux-gnu'
           # - platform: 'windows-latest'
           #   args: ''
 
@@ -39,7 +39,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || matrix.args == '--target armv7-unknown-linux-gnueabihf' && 'armv7-unknown-linux-gnueabi' || '' }}
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || matrix.args == '--target aarch64-unknown-linux-gnueabihf' && 'aarch64-unknown-linux-gnueabi' || '' }}
 
       - name: install dependencies (ubuntu x86 only)
         if: matrix.platform == 'ubuntu-20.04' && matrix.args == '' # This must match the platform value defined above.
@@ -47,15 +47,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - name: install dependencies (ubuntu ARMv7 only)
-        if: matrix.platform == 'ubuntu-20.04' && matrix.args == '--target armv7-unknown-linux-gnueabihf' # This must match the platform value defined above.
+      - name: install dependencies (ubuntu ARM64 only)
+        if: matrix.platform == 'ubuntu-20.04' && matrix.args == '--target aarch64-unknown-linux-gnueabihf' # This must match the platform value defined above.
         run: |
           sudo apt-get update
-          sudo apt install gcc-arm-linux-gnueabihf
-          sudo dpkg --add-architecture armhf
+          sudo apt install gcc-aarch64-linux-gnu
+          sudo dpkg --add-architecture arm64
           sudo apt-get update && sudo apt-get upgrade -y
-          sudo apt install libwebkit2gtk-4.0-dev:armhf libappindicator3-dev:armhf librsvg2-dev:armhf patchelf:armhf libssl-dev:armhf
-          export PKG_CONFIG_SYSROOT_DIR=/usr/arm-linux-gnueabihf/
+          sudo apt install libwebkit2gtk-4.0-dev:arm64 libappindicator3-dev:arm64 librsvg2-dev:arm64 patchelf:arm64 libssl-dev:arm64
+          export PKG_CONFIG_SYSROOT_DIR=/usr/aarch64-linux-gnu/
           
       - name: install frontend dependencies
         run: npm install # change this to npm or pnpm depending on which one you use
