@@ -22,7 +22,7 @@ jobs:
           # - platform: 'ubuntu-20.04' # for ARMv7 linux
           #   args: '--target armv7-unknown-linux-gnueabihf'
           - platform: 'ubuntu-20.04' # for ARM64 linux
-            args: 'target aarch64-unknown-linux-gnu'
+            args: '--target aarch64-unknown-linux-gnu'
           # - platform: 'windows-latest'
           #   args: ''
 
@@ -39,7 +39,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || matrix.args == 'target aarch64-unknown-linux-gnu' && 'aarch64-unknown-linux-gnu' || '' }}
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || matrix.args == '--target aarch64-unknown-linux-gnu' && 'aarch64-unknown-linux-gnu' || '' }}
 
       - name: install dependencies (ubuntu x86 only)
         if: matrix.platform == 'ubuntu-20.04' && matrix.args == '' # This must match the platform value defined above.
@@ -48,7 +48,7 @@ jobs:
           sudo apt-get install -y libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
 
       - name: install dependencies (ubuntu ARM64 only)
-        if: matrix.platform == 'ubuntu-20.04' && matrix.args == 'target aarch64-unknown-linux-gnueabihf' # This must match the platform value defined above.
+        if: matrix.platform == 'ubuntu-20.04' && matrix.args == '--target aarch64-unknown-linux-gnu' # This must match the platform value defined above.
         run: |
           sudo apt-get update
           sudo apt install gcc-aarch64-linux-gnu
